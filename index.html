@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SAL Movie | Search</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-S...HASH..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+    <style>
+        /* Sistem Dasar & Background */
+        body {
+            background-color: #f0f4f8;
+            /* Background utama sesuai request */
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-wrapper {
+            background-color: #f0f4f8;
+            min-height: 100vh;
+        }
+
+        /* Typography & Efek Neon Silver */
+        .text-glow {
+            /* Efek menyala putih perak/silver neon */
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+                0 0 20px rgba(200, 200, 200, 0.5),
+                0 0 30px rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+
+        .glow-separator {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #bdc3c7, transparent);
+            box-shadow: 0 0 12px rgba(189, 195, 199, 0.6);
+            border-radius: 50%;
+            margin: 20px 0 40px 0;
+            opacity: 0.7;
+        }
+
+        /* Komponen Kartu Film (Movie Card) */
+        .row#movie-list {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            /* Penting agar isi tidak keluar radius */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-body {
+            flex-grow: 1;
+            /* Memastikan body mengambil sisa ruang */
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+        }
+
+        /* Poster & Content Warning (Anti-Bocor) */
+        .poster-container {
+            position: relative;
+            height: 450px;
+            /* Tinggi seragam untuk semua poster */
+            width: 100%;
+            background-color: #000;
+            overflow: hidden;
+            /* KUNCI UTAMA: Menahan overlay agar tidak bocor ke teks */
+        }
+
+        .card-img-top {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            transition: filter 0.3s ease;
+        }
+
+        /* Efek Blur untuk konten bermasalah */
+        .filter-blur {
+            filter: blur(15px);
+            transform: scale(1.1);
+            /* Zoom dikit agar pinggiran tidak putih */
+        }
+
+        /* Overlay Peringatan ala TikTok/Legal Site */
+        .content-warning-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            /* Hitam pekat transparan */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 5;
+        }
+
+        /* Animasi & Elemen Tambahan */
+        .bi-exclamation-triangle-fill {
+            color: #ff4d4d;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Tombol Details agar selalu di bawah kartu */
+        .mt-auto-btn {
+            margin-top: auto;
+        }
+
+        /* Menghindari gambar error terlihat berantakan */
+        img {
+            font-size: 12px;
+            color: #6666;
+            background-color: #e9ecef;
+        }
+
+        .mb-4 img {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary bg-gradient shadow">
+        <div class="container">
+            <a class="navbar-brand text-glow" href="#"><i class="bi bi-film me-2"></i>Sal Movie</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-item nav-link active" href="#"><i class="bi bi-card-list"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="mb-4">
+                    <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=28&pause=1000&color=0D6EFD&center=true&vCenter=true&width=700&lines=Search+Your+Favorite+Movie;Find+Your+Cinema+🎬;Sal+Movie:+Gateway+to+the+Silver+Screen"
+                        alt="Typing SVG" />
+                </div>
+                <div class="input-group mb-3 shadow-sm">
+                    <input type="text" class="form-control form-control-lg" placeholder="Type movie title here..."
+                        id="search-input">
+                    <button class="btn btn-primary px-4" type="button" id="search-button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glow-separator"></div>
+
+        <div class="row" id="movie-list">
+            <div class="col text-center text-muted">
+                <p>Start searching to see movies here...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="exampleModalLabel">Movie Detail</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+<script src="js/script.js"></script>
+
+</html>
