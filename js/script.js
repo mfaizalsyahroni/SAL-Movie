@@ -15,7 +15,7 @@ function searchMovie() {
                 let movies = result.Search;
                 $.each(movies, function (i, data) {
                     // Replace the film card append section with this code:
-                        $('#movie-list').append(`
+                    $('#movie-list').append(`
                             <div class="col-md-4 mb-4 d-flex align-items-stretch">
                                 <div class="card w-100 shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
                                     
@@ -64,7 +64,7 @@ function searchMovie() {
                     </div>
                 `);
             }
-             // Menampilkan pesan kesalahan.
+            // Menampilkan pesan kesalahan.
         }
     });
 }
@@ -74,7 +74,7 @@ $('#search-button').on('click', function () {
 });
 /*Event Binding:
 Mengikat fungsi pencarian ke tombol dan input
-*/ 
+*/
 
 $('#search-input').on('keyup', function (e) {
     if (e.which === 13) {
@@ -130,7 +130,7 @@ $('#movie-list').on('click', '.see-detail', function () {
 
 function showMovie(genre) {
     $('#movie-list').html('');
-    
+
     $.ajax({
         url: 'http://omdbapi.com',
         type: 'get',
@@ -190,3 +190,67 @@ function showMovie(genre) {
         }
     });
 }
+
+
+function showTopBoxOffice() {
+    const topMovies = [
+        "Avengers Endgame",
+        "Avatar: Fire and Ash",
+        "F1: The Movie",
+        "Hacksaw Ridge",
+        "Oppenheimer",
+        "Fast X"
+    ];
+
+    $('#movie-list').html('');
+    $('#bottom-separator').removeClass('d-none');
+
+
+    // Loop setiap film, cari satu per satu
+    $.each(topMovies, function (i, movieTitle) {
+        $.ajax({
+            url: 'http://omdbapi.com',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                'apikey': '6df5ea04',
+                't': movieTitle  // 't' = cari by judul exact
+            },
+            success: function (movie) {
+                // Langkah 3 ada di sini
+                if (movie.Response === "True") {
+                    $('#movie-list').append(`
+            <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                <div class="card w-100 shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                    <div class="poster-container">
+                        <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://dummyimage.com/600x900/000/000.png'}" 
+                            class="card-img-top"
+                            alt="${movie.Title}"
+                            style="height: 100%; width: 100%; object-fit: cover;">
+                    </div>
+                    <div class="card-body bg-white d-flex flex-column">
+                        <h5 class="card-title fw-bold text-dark text-truncate">${movie.Title}</h5>
+                        <p class="card-text text-secondary mb-4 small">
+                            <i class="bi bi-calendar-event me-1"></i> ${movie.Year}
+                        </p>
+                        <a href="#" class="btn btn-outline-primary w-100 rounded-pill mt-auto see-detail"
+                            data-bs-toggle="modal" data-bs-target="#exampleModal"
+                            data-id="${movie.imdbID}">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `);
+                }
+            }
+        });
+    });
+
+}
+
+
+//jquery ready method 
+$(document).ready(function () {
+    showTopBoxOffice();
+});
