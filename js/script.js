@@ -205,8 +205,12 @@ function showTopBoxOffice() {
     $('#movie-list').html('');
     $('#bottom-separator').removeClass('d-none');
 
+    // Buat placeholder dulu sesuai urutan array
+    $.each(topMovies, function (i, movieTitle) {
+        $('#movie-list').append(`<div id="movie-slot-${i}"></div>`);
+    });
 
-    // Loop setiap film, cari satu per satu
+    // Loop AJAX as usual
     $.each(topMovies, function (i, movieTitle) {
         $.ajax({
             url: 'http://omdbapi.com',
@@ -214,39 +218,40 @@ function showTopBoxOffice() {
             dataType: 'json',
             data: {
                 'apikey': '6df5ea04',
-                't': movieTitle  // 't' = cari by judul exact
+                't': movieTitle
             },
             success: function (movie) {
-                // Langkah 3 ada di sini
                 if (movie.Response === "True") {
-                    $('#movie-list').append(`
-            <div class="col-md-4 mb-4 d-flex align-items-stretch">
-                <div class="card w-100 shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
-                    <div class="poster-container">
-                        <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://dummyimage.com/600x900/000/000.png'}" 
-                            class="card-img-top"
-                            alt="${movie.Title}"
-                            style="height: 100%; width: 100%; object-fit: cover;">
-                    </div>
-                    <div class="card-body bg-white d-flex flex-column">
-                        <h5 class="card-title fw-bold text-dark text-truncate">${movie.Title}</h5>
-                        <p class="card-text text-secondary mb-4 small">
-                            <i class="bi bi-calendar-event me-1"></i> ${movie.Year}
-                        </p>
-                        <a href="#" class="btn btn-outline-primary w-100 rounded-pill mt-auto see-detail"
-                            data-bs-toggle="modal" data-bs-target="#exampleModal"
-                            data-id="${movie.imdbID}">
-                            View Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-        `);
+                    const card = $(`
+                        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                            <div class="card w-100 shadow-sm border-0" style="border-radius: 15px; overflow: hidden;">
+                                <div class="poster-container">
+                                    <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://dummyimage.com/600x900/000/000.png'}" 
+                                        class="card-img-top"
+                                        alt="${movie.Title}"
+                                        style="height: 100%; width: 100%; object-fit: cover;">
+                                </div>
+                                <div class="card-body bg-white d-flex flex-column">
+                                    <h5 class="card-title fw-bold text-dark text-truncate">${movie.Title}</h5>
+                                    <p class="card-text text-secondary mb-4 small">
+                                        <i class="bi bi-calendar-event me-1"></i> ${movie.Year}
+                                    </p>
+                                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill mt-auto see-detail"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                        data-id="${movie.imdbID}">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+
+                    // Place the card in the slot that has been reserved according to the index
+                    $(`#movie-slot-${i}`).replaceWith(card);
                 }
             }
         });
     });
-
 }
 
 
